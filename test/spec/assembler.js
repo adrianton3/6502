@@ -33,13 +33,15 @@
 		]
 	}
 
-	Object.keys(specs).forEach((text) => {
-		describe(`${text}:`, () => {
-			const entries = specs[text]
+	describe('assembler', () => {
+		Object.keys(specs).forEach((text) => {
+			describe(`${text}:`, () => {
+				const entries = specs[text]
 
-			entries.forEach(({ code, hex }) => {
-				it(code, () => {
-					expect(assemble(code)).toEqual(hex)
+				entries.forEach(({ code, hex }) => {
+					it(code, () => {
+						expect(assemble(code)).toEqual(hex)
+					})
 				})
 			})
 		})
