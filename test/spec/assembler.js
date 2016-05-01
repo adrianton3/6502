@@ -31,6 +31,18 @@
 			{ code: 'ASL $2345', hex: [0x0e, 0x45, 0x23] },
 			{ code: 'ASL $2345,X', hex: [0x1e, 0x45, 0x23] }
 		],
+		'DEC': [
+			{ code: 'DEC $23', hex: [0xc6, 0x23] },
+			{ code: 'DEC $23,X', hex: [0xd6, 0x23] },
+			{ code: 'DEC $2345', hex: [0xce, 0x45, 0x23] },
+			{ code: 'DEC $2345,X', hex: [0xde, 0x45, 0x23] }
+		],
+		'DEX': [
+			{ code: 'DEX', hex: [0xca] }
+		],
+		'DEY': [
+			{ code: 'DEY', hex: [0x88] }
+		],
 		'INC': [
 			{ code: 'INC $23', hex: [0xe6, 0x23] },
 			{ code: 'INC $23,X', hex: [0xf6, 0x23] },

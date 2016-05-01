@@ -49,9 +49,14 @@
 		'CMP': {},
 		'CPX': {},
 		'CPY': {},
-		'DEC': {},
-		'DEX': {},
-		'DEY': {},
+		'DEC': {
+			zeroPage: 0xC6,
+			zeroPageX: 0xD6,
+			absolute: 0xCE,
+			absoluteX: 0xDE
+		},
+		'DEX': { implied: 0xCA },
+		'DEY': { implied: 0x88 },
 		'EOR': {},
 		'INC': {
 			zeroPage: 0xE6,
