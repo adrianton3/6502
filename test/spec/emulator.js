@@ -83,6 +83,27 @@
 			code: 'ASL $2345,X',
 			result: { programCounter: START_PROGRAM + 3, A: 0 }
 		}],
+		'DEC': [{
+			code: 'DEC $23',
+			result: { programCounter: START_PROGRAM + 2, memory: { 0x23: 255 } }
+		}, {
+			code: 'DEC $23,X',
+			result: { programCounter: START_PROGRAM + 2, memory: { 0x23: 255 } }
+		}, {
+			code: 'DEC $2345',
+			result: { programCounter: START_PROGRAM + 3, memory: { 0x2345: 255 } }
+		}, {
+			code: 'DEC $2345,X',
+			result: { programCounter: START_PROGRAM + 3, memory: { 0x2345: 255 } }
+		}],
+		'DEX': [{
+			code: 'DEX',
+			result: { programCounter: START_PROGRAM + 1, X: 255 }
+		}],
+		'DEY': [{
+			code: 'DEY',
+			result: { programCounter: START_PROGRAM + 1, Y: 255 }
+		}],
 		'INC': [{
 			code: 'INC $23',
 			result: { programCounter: START_PROGRAM + 2, memory: { 0x23: 1 } }

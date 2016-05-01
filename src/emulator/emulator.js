@@ -108,6 +108,26 @@
 			state.A <<= 1
 		},
 
+		DEC (state, address) {
+			state.memory[address]--
+		},
+
+		DEX (state) {
+			if (state.X === 0) {
+				state.X = 255
+			} else {
+				state.X--
+			}
+		},
+
+		DEY (state) {
+			if (state.Y === 0) {
+				state.Y = 255
+			} else {
+				state.Y--
+			}
+		},
+
 		INC (state, address) {
 			state.memory[address]++
 		},
@@ -181,6 +201,17 @@
 		])
 
 		registerInstruction(instructionTypes.ASL_A, 0x0A)
+
+		registerInstructions(instructionTypes.DEC, [
+			[0xC6, addressModes.zeroPage],
+			[0xD6, addressModes.zeroPageX],
+			[0xCE, addressModes.absolute],
+			[0xDE, addressModes.absoluteX]
+		])
+
+		registerInstruction(instructionTypes.DEX, 0xCA)
+
+		registerInstruction(instructionTypes.DEY, 0x88)
 
 		registerInstructions(instructionTypes.INC, [
 			[0xE6, addressModes.zeroPage],
