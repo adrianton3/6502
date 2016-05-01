@@ -4,57 +4,90 @@
 	const START_PROGRAM = 0x200
 
 	const addressModes = {
-		absolute ({ memory, programCounter }) {
-			return memory[programCounter] << 8 |
-				memory[programCounter + 1]
+		absolute: {
+			getAddress ({ memory, programCounter }) {
+				return memory[programCounter] << 8 |
+					memory[programCounter + 1]
+			},
+			bytes: 2
 		},
 
-		absoluteX ({ memory, programCounter, X }) {
-			return memory[programCounter + X] << 8 |
-				memory[programCounter + X + 1]
+		absoluteX: {
+			getAddress ({ memory, programCounter, X }) {
+				return memory[programCounter + X] << 8 |
+					memory[programCounter + X + 1]
+			},
+			bytes: 2
 		},
 
-		absoluteY ({ memory, programCounter, Y }) {
-			return memory[programCounter + Y] << 8 |
-				memory[programCounter + Y + 1]
+		absoluteY: {
+			getAddress ({ memory, programCounter, Y }) {
+				return memory[programCounter + Y] << 8 |
+					memory[programCounter + Y + 1]
+			},
+			bytes: 2
 		},
 
-		zeroPage ({ memory, programCounter }) {
-			return memory[programCounter]
+		zeroPage: {
+			getAddress ({ memory, programCounter }) {
+				return memory[programCounter]
+			},
+			bytes: 1
 		},
 
-		zeroPageX ({ programCounter, X }) {
-			return (programCounter + X) & 0xFF
+		zeroPageX: {
+			getAddress ({ programCounter, X }) {
+				return (programCounter + X) & 0xFF
+			},
+			bytes: 1
 		},
 
-		zeroPageY ({ programCounter, Y }) {
-			return (programCounter + Y) & 0xFF
+		zeroPageY: {
+			getAddress ({ programCounter, Y }) {
+				return (programCounter + Y) & 0xFF
+			},
+			bytes: 1
 		},
 
-		immediate ({ programCounter }) {
-			return programCounter
+		immediate: {
+			getAddress ({ programCounter }) {
+				return programCounter
+			},
+			bytes: 1
 		},
 
-		relative ({ memory, programCounter }) {
-			return programCounter + memory[programCounter]
+		relative: {
+			getAddress ({ memory, programCounter }) {
+				return programCounter + memory[programCounter]
+			},
+			bytes: 1
 		},
 
-		indirect ({ memory, programCounter }) {
-			const addressAddress = memory[programCounter] << 8 |
-				memory[programCounter + 1]
-			return memory[addressAddress]
+		indirect: {
+			getAddress ({ memory, programCounter }) {
+				const addressAddress = memory[programCounter] << 8 |
+					memory[programCounter + 1]
+				return memory[addressAddress]
+			},
+			bytes: 2
 		},
 
-		indexedIndirect ({ memory, programCounter, X }) {
-			const address = memory[programCounter + X] << 8 |
-				memory[programCounter + X + 1]
-			return memory[address] << 8 | memory[address + 1]
+		indexedIndirect: {
+			getAddress ({ memory, programCounter, X }) {
+				const address = memory[programCounter + X] << 8 |
+					memory[programCounter + X + 1]
+				return memory[address] << 8 | memory[address + 1]
+			},
+			bytes: 1
 		},
 
-		indirectIndexed ({ memory, programCounter, Y }) {
-			const address = memory[programCounter] << 8 |
-				memory[programCounter + 1]
-			return memory[address + Y] << 8 | memory[address + Y + 1]
+		indirectIndexed: {
+			getAddress ({ memory, programCounter, Y }) {
+				const address = memory[programCounter] << 8 |
+					memory[programCounter + 1]
+				return memory[address + Y] << 8 | memory[address + Y + 1]
+			},
+			bytes: 1
 		}
 	}
 
@@ -93,8 +126,11 @@
 
 		function registerInstruction (instructionType, opcode, addressMode) {
 			instructions[opcode] = addressMode ?
-				(state) => instructionType(state, addressMode(state)) :
-				instructionType
+				(state) => {
+					const address = addressMode.getAddress(state)
+					instructionType(state, address)
+					state.programCounter += addressMode.bytes
+				} : instructionType
 		}
 
 		function registerInstructions (instructionType, pairs) {
