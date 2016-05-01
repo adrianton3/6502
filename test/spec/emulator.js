@@ -82,6 +82,27 @@
 		}, {
 			code: 'ASL $2345,X',
 			result: { programCounter: START_PROGRAM + 3, A: 0 }
+		}],
+		'INC': [{
+			code: 'INC $23',
+			result: { programCounter: START_PROGRAM + 2 }
+		}, {
+			code: 'INC $23,X',
+			result: { programCounter: START_PROGRAM + 2 }
+		}, {
+			code: 'INC $2345',
+			result: { programCounter: START_PROGRAM + 3 }
+		}, {
+			code: 'INC $2345,X',
+			result: { programCounter: START_PROGRAM + 3 }
+		}],
+		'INX': [{
+			code: 'INX',
+			result: { programCounter: START_PROGRAM + 1, X: 1 }
+		}],
+		'INY': [{
+			code: 'INY',
+			result: { programCounter: START_PROGRAM + 1, Y: 1 }
 		}]
 	}
 

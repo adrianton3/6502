@@ -106,6 +106,18 @@
 
 		ASL_A (state) {
 			state.A <<= 1
+		},
+
+		INC (state, address) {
+			state.memory[address]++
+		},
+
+		INX (state) {
+			state.X++
+		},
+
+		INY (state) {
+			state.Y++
 		}
 	}
 
@@ -169,6 +181,17 @@
 		])
 
 		registerInstruction(instructionTypes.ASL_A, 0x0A)
+
+		registerInstructions(instructionTypes.INC, [
+			[0xE6, addressModes.zeroPage],
+			[0xF6, addressModes.zeroPageX],
+			[0xEE, addressModes.absolute],
+			[0xFE, addressModes.absoluteX]
+		])
+
+		registerInstruction(instructionTypes.INX, 0xE8)
+
+		registerInstruction(instructionTypes.INY, 0xC8)
 
 		return instructions
 	}
