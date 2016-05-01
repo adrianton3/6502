@@ -6,24 +6,24 @@
 	const addressModes = {
 		absolute: {
 			getAddress ({ memory, programCounter }) {
-				return memory[programCounter] << 8 |
-					memory[programCounter + 1]
+				return memory[programCounter] |
+					memory[programCounter + 1] << 8
 			},
 			bytes: 2
 		},
 
 		absoluteX: {
 			getAddress ({ memory, programCounter, X }) {
-				return memory[programCounter + X] << 8 |
-					memory[programCounter + X + 1]
+				return memory[programCounter + X] |
+					memory[programCounter + X + 1] << 8
 			},
 			bytes: 2
 		},
 
 		absoluteY: {
 			getAddress ({ memory, programCounter, Y }) {
-				return memory[programCounter + Y] << 8 |
-					memory[programCounter + Y + 1]
+				return memory[programCounter + Y] |
+					memory[programCounter + Y + 1] << 8
 			},
 			bytes: 2
 		},
@@ -36,15 +36,15 @@
 		},
 
 		zeroPageX: {
-			getAddress ({ programCounter, X }) {
-				return (programCounter + X) & 0xFF
+			getAddress ({ memory, programCounter, X }) {
+				return (memory[programCounter] + X) & 0xFF
 			},
 			bytes: 1
 		},
 
 		zeroPageY: {
-			getAddress ({ programCounter, Y }) {
-				return (programCounter + Y) & 0xFF
+			getAddress ({ memory, programCounter, Y }) {
+				return (memory[programCounter] + Y) & 0xFF
 			},
 			bytes: 1
 		},
@@ -65,8 +65,8 @@
 
 		indirect: {
 			getAddress ({ memory, programCounter }) {
-				const addressAddress = memory[programCounter] << 8 |
-					memory[programCounter + 1]
+				const addressAddress = memory[programCounter] |
+					memory[programCounter + 1] << 8
 				return memory[addressAddress]
 			},
 			bytes: 2
@@ -74,18 +74,18 @@
 
 		indexedIndirect: {
 			getAddress ({ memory, programCounter, X }) {
-				const address = memory[programCounter + X] << 8 |
-					memory[programCounter + X + 1]
-				return memory[address] << 8 | memory[address + 1]
+				const address = memory[programCounter + X] |
+					memory[programCounter + X + 1] << 8
+				return memory[address] | memory[address + 1] << 8
 			},
 			bytes: 1
 		},
 
 		indirectIndexed: {
 			getAddress ({ memory, programCounter, Y }) {
-				const address = memory[programCounter] << 8 |
-					memory[programCounter + 1]
-				return memory[address + Y] << 8 | memory[address + Y + 1]
+				const address = memory[programCounter] |
+					memory[programCounter + 1] << 8
+				return memory[address + Y] | memory[address + Y + 1] << 8
 			},
 			bytes: 1
 		}
