@@ -30,6 +30,18 @@
 			{ code: 'ASL $23,X', hex: [0x16, 0x23] },
 			{ code: 'ASL $2345', hex: [0x0e, 0x45, 0x23] },
 			{ code: 'ASL $2345,X', hex: [0x1e, 0x45, 0x23] }
+		],
+		'INC': [
+			{ code: 'INC $23', hex: [0xe6, 0x23] },
+			{ code: 'INC $23,X', hex: [0xf6, 0x23] },
+			{ code: 'INC $2345', hex: [0xee, 0x45, 0x23] },
+			{ code: 'INC $2345,X', hex: [0xfe, 0x45, 0x23] }
+		],
+		'INX': [
+			{ code: 'INX', hex: [0xe8] }
+		],
+		'INY': [
+			{ code: 'INY', hex: [0xc8] }
 		]
 	}
 

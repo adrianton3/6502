@@ -53,9 +53,14 @@
 		'DEX': {},
 		'DEY': {},
 		'EOR': {},
-		'INC': {},
-		'INX': {},
-		'INY': {},
+		'INC': {
+			zeroPage: 0xE6,
+			zeroPageX: 0xF6,
+			absolute: 0xEE,
+			absoluteX: 0xFE
+		},
+		'INX': { implied: 0xE8 },
+		'INY': { implied: 0xC8 },
 		'JMP': {},
 		'JSR': {},
 		'LDA': {},
@@ -107,6 +112,10 @@
 			test: (string) => string === 'A',
 			extract: () => []
 		},
+		implied: {
+			test: (string) => string === undefined,
+			extract: () => []
+		},
 		immediate: {
 			test: (string) => /^#\$[\dA-Fa-f]{2}$/.test(string),
 			extract: parseByte(1)
@@ -153,7 +162,7 @@
 		const lines = string.split('\n')
 
 		const encoded = lines.map((line) => {
-			const [_, mnemonic, operand] = line.match(/(\w+)\s+([\dA-F#$(),XY]+)?/)
+			const [_, mnemonic, operand] = line.match(/(\w+)(?:\s+([\dA-F#$(),XY]+))?/)
 
 			const variants = instructions[mnemonic]
 			const matchVariant = Object.keys(variants).find((name) =>
