@@ -85,16 +85,16 @@
 		}],
 		'INC': [{
 			code: 'INC $23',
-			result: { programCounter: START_PROGRAM + 2 }
+			result: { programCounter: START_PROGRAM + 2, memory: { 0x23: 1 } }
 		}, {
 			code: 'INC $23,X',
-			result: { programCounter: START_PROGRAM + 2 }
+			result: { programCounter: START_PROGRAM + 2, memory: { 0x23: 1 } }
 		}, {
 			code: 'INC $2345',
-			result: { programCounter: START_PROGRAM + 3 }
+			result: { programCounter: START_PROGRAM + 3, memory: { 0x2345: 1 } }
 		}, {
 			code: 'INC $2345,X',
-			result: { programCounter: START_PROGRAM + 3 }
+			result: { programCounter: START_PROGRAM + 3, memory: { 0x2345: 1 } }
 		}],
 		'INX': [{
 			code: 'INX',
