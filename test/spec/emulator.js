@@ -12,7 +12,7 @@
 		const rom = assemble(code)
 		const cpu = makeCpu()
 		cpu.load(rom)
-		cpu.tick()
+		cpu.run({ stopOpcode: 0x00 })
 		return cpu.getState()
 	}
 

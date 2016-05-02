@@ -249,10 +249,17 @@
 			instruction(state)
 		}
 
+		function run ({ stopOpcode }) {
+			while (state.memory[state.programCounter] !== stopOpcode) {
+				tick()
+			}
+		}
+
 		return {
 			getState,
 			load,
-			tick
+			tick,
+			run
 		}
 	}
 
