@@ -54,6 +54,30 @@
 		],
 		'INY': [
 			{ code: 'INY', hex: [0xc8] }
+		],
+		'LDA': [
+			{ code: 'LDA #$23', hex: [0xA9, 0x23] },
+			{ code: 'LDA $23', hex: [0xA5, 0x23] },
+			{ code: 'LDA $23,X', hex: [0xB5, 0x23] },
+			{ code: 'LDA $2345', hex: [0xAD, 0x45, 0x23] },
+			{ code: 'LDA $2345,X', hex: [0xBD, 0x45, 0x23] },
+			{ code: 'LDA $2345,Y', hex: [0xB9, 0x45, 0x23] },
+			{ code: 'LDA ($23,X)', hex: [0xA1, 0x23] },
+			{ code: 'LDA ($23),Y', hex: [0xB1, 0x23] }
+		],
+		'LDX': [
+			{ code: 'LDX #$23', hex: [0xA2, 0x23] },
+			{ code: 'LDX $23', hex: [0xA6, 0x23] },
+			{ code: 'LDX $23,X', hex: [0xB6, 0x23] },
+			{ code: 'LDX $2345', hex: [0xAE, 0x45, 0x23] },
+			{ code: 'LDX $2345,X', hex: [0xBE, 0x45, 0x23] }
+		],
+		'LDY': [
+			{ code: 'LDY #$23', hex: [0xA0, 0x23] },
+			{ code: 'LDY $23', hex: [0xA4, 0x23] },
+			{ code: 'LDY $23,X', hex: [0xB4, 0x23] },
+			{ code: 'LDY $2345', hex: [0xAC, 0x45, 0x23] },
+			{ code: 'LDY $2345,X', hex: [0xBC, 0x45, 0x23] }
 		]
 	}
 

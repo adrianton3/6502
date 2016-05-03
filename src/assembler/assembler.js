@@ -68,9 +68,30 @@
 		'INY': { implied: 0xC8 },
 		'JMP': {},
 		'JSR': {},
-		'LDA': {},
-		'LDX': {},
-		'LDY': {},
+		'LDA': {
+			immediate: 0xA9,
+			zeroPage: 0xA5,
+			zeroPageX: 0xB5,
+			absolute: 0xAD,
+			absoluteX: 0xBD,
+			absoluteY: 0xB9,
+			indexedIndirect: 0xA1,
+			indirectIndexed: 0xB1
+		},
+		'LDX': {
+			immediate: 0xA2,
+			zeroPage: 0xA6,
+			zeroPageX: 0xB6,
+			absolute: 0xAE,
+			absoluteX: 0xBE
+		},
+		'LDY': {
+			immediate: 0xA0,
+			zeroPage: 0xA4,
+			zeroPageX: 0xB4,
+			absolute: 0xAC,
+			absoluteX: 0xBC
+		},
 		'LSR': {},
 		'NOP': {},
 		'ORA': {},
