@@ -150,6 +150,18 @@
 
 		LDY (state, address) {
 			state.Y = state.memory[address]
+		},
+
+		STA (state, address) {
+			state.memory[address] = state.A
+		},
+
+		STX (state, address) {
+			state.memory[address] = state.X
+		},
+
+		STY (state, address) {
+			state.memory[address] = state.Y
 		}
 	}
 
@@ -261,6 +273,28 @@
 			[0xB4, addressModes.zeroPageX],
 			[0xAC, addressModes.absolute],
 			[0xBC, addressModes.absoluteX]
+		])
+
+		registerInstructions(instructionTypes.STA, [
+			[0x85, addressModes.zeroPage],
+			[0x95, addressModes.zeroPageX],
+			[0x8D, addressModes.absolute],
+			[0x9D, addressModes.absoluteY],
+			[0x99, addressModes.absoluteX],
+			[0x81, addressModes.indexedIndirect],
+			[0x91, addressModes.indirectIndexed]
+		])
+
+		registerInstructions(instructionTypes.STX, [
+			[0x86, addressModes.zeroPage],
+			[0x96, addressModes.zeroPageY],
+			[0x8E, addressModes.absolute]
+		])
+
+		registerInstructions(instructionTypes.STY, [
+			[0x84, addressModes.zeroPage],
+			[0x94, addressModes.zeroPageX],
+			[0x8C, addressModes.absolute]
 		])
 
 		return instructions

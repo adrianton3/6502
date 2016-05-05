@@ -107,9 +107,25 @@
 		'SEC': {},
 		'SED': {},
 		'SEI': {},
-		'STA': {},
-		'STX': {},
-		'STY': {},
+		'STA': {
+			zeroPage: 0x85,
+			zeroPageX: 0x95,
+			absolute: 0x8D,
+			absoluteX: 0x9D,
+			absoluteY: 0x99,
+			indexedIndirect: 0x81,
+			indirectIndexed: 0x91
+		},
+		'STX': {
+			zeroPage: 0x86,
+			zeroPageY: 0x96,
+			absolute: 0x8E
+		},
+		'STY': {
+			zeroPage: 0x84,
+			zeroPageX: 0x94,
+			absolute: 0x8C
+		},
 		'TAX': {},
 		'TAY': {},
 		'TSX': {},
