@@ -170,6 +170,14 @@
 
 		TAY (state) {
 			state.Y = state.A
+		},
+
+		TXA (state) {
+			state.A = state.X
+		},
+
+		TYA (state) {
+			state.A = state.Y
 		}
 	}
 
@@ -308,6 +316,10 @@
 		registerInstruction(instructionTypes.TAX, 0xAA)
 
 		registerInstruction(instructionTypes.TAY, 0xA8)
+
+		registerInstruction(instructionTypes.TXA, 0x8A)
+
+		registerInstruction(instructionTypes.TYA, 0x98)
 
 		return instructions
 	}

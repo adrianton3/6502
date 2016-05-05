@@ -129,9 +129,9 @@
 		'TAX': { implied: 0xAA },
 		'TAY': { implied: 0xA8 },
 		'TSX': {},
-		'TXA': {},
+		'TXA': { implied: 0x8A },
 		'TXS': {},
-		'TYA': {}
+		'TYA': { implied: 0x98 }
 	}
 
 	function parseByte (left = 0, right = 0) {
