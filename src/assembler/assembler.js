@@ -57,7 +57,16 @@
 		},
 		'DEX': { implied: 0xCA },
 		'DEY': { implied: 0x88 },
-		'EOR': {},
+		'EOR': {
+			immediate: 0x49,
+			zeroPage: 0x45,
+			zeroPageX: 0x55,
+			absolute: 0x4D,
+			absoluteY: 0x5D,
+			absoluteX: 0x59,
+			indexedIndirect: 0x41,
+			indirectIndexed: 0x51
+		},
 		'INC': {
 			zeroPage: 0xE6,
 			zeroPageX: 0xF6,
@@ -92,9 +101,24 @@
 			absolute: 0xAC,
 			absoluteX: 0xBC
 		},
-		'LSR': {},
+		'LSR': {
+			accumulator: 0x4A,
+			zeroPage: 0x46,
+			zeroPageX: 0x56,
+			absolute: 0x4E,
+			absoluteX: 0x5E
+		},
 		'NOP': {},
-		'ORA': {},
+		'ORA': {
+			immediate: 0x09,
+			zeroPage: 0x05,
+			zeroPageX: 0x15,
+			absolute: 0x0D,
+			absoluteY: 0x1D,
+			absoluteX: 0x19,
+			indexedIndirect: 0x01,
+			indirectIndexed: 0x11
+		},
 		'PHA': {},
 		'PHP': {},
 		'PLA': {},

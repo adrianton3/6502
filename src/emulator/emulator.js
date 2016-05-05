@@ -128,6 +128,10 @@
 			}
 		},
 
+		EOR (state, address) {
+			state.A ^= state.memory[address]
+		},
+
 		INC (state, address) {
 			state.memory[address]++
 		},
@@ -150,6 +154,18 @@
 
 		LDY (state, address) {
 			state.Y = state.memory[address]
+		},
+
+		LSR (state, address) {
+			state.memory[address] >>= 1
+		},
+
+		LSR_A (state) {
+			state.A >>= 1
+		},
+
+		ORA (state, address) {
+			state.A |= state.memory[address]
 		},
 
 		STA (state, address) {
@@ -253,6 +269,17 @@
 
 		registerInstruction(instructionTypes.DEY, 0x88)
 
+		registerInstructions(instructionTypes.EOR, [
+			[0x49, addressModes.immediate],
+			[0x45, addressModes.zeroPage],
+			[0x55, addressModes.zeroPageX],
+			[0x4D, addressModes.absolute],
+			[0x5D, addressModes.absoluteY],
+			[0x59, addressModes.absoluteX],
+			[0x41, addressModes.indexedIndirect],
+			[0x51, addressModes.indirectIndexed]
+		])
+
 		registerInstructions(instructionTypes.INC, [
 			[0xE6, addressModes.zeroPage],
 			[0xF6, addressModes.zeroPageX],
@@ -289,6 +316,26 @@
 			[0xB4, addressModes.zeroPageX],
 			[0xAC, addressModes.absolute],
 			[0xBC, addressModes.absoluteX]
+		])
+
+		registerInstructions(instructionTypes.LSR, [
+			[0x46, addressModes.zeroPage],
+			[0x56, addressModes.zeroPageX],
+			[0x4E, addressModes.absolute],
+			[0x5E, addressModes.absoluteX]
+		])
+
+		registerInstruction(instructionTypes.LSR_A, 0x4A)
+
+		registerInstructions(instructionTypes.ORA, [
+			[0x09, addressModes.immediate],
+			[0x05, addressModes.zeroPage],
+			[0x15, addressModes.zeroPageX],
+			[0x0D, addressModes.absolute],
+			[0x1D, addressModes.absoluteY],
+			[0x19, addressModes.absoluteX],
+			[0x01, addressModes.indexedIndirect],
+			[0x11, addressModes.indirectIndexed]
 		])
 
 		registerInstructions(instructionTypes.STA, [
