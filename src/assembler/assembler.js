@@ -126,8 +126,8 @@
 			zeroPageX: 0x94,
 			absolute: 0x8C
 		},
-		'TAX': {},
-		'TAY': {},
+		'TAX': { implied: 0xAA },
+		'TAY': { implied: 0xA8 },
 		'TSX': {},
 		'TXA': {},
 		'TXS': {},

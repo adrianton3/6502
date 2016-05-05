@@ -162,6 +162,14 @@
 
 		STY (state, address) {
 			state.memory[address] = state.Y
+		},
+
+		TAX (state) {
+			state.X = state.A
+		},
+
+		TAY (state) {
+			state.Y = state.A
 		}
 	}
 
@@ -296,6 +304,10 @@
 			[0x94, addressModes.zeroPageX],
 			[0x8C, addressModes.absolute]
 		])
+
+		registerInstruction(instructionTypes.TAX, 0xAA)
+
+		registerInstruction(instructionTypes.TAY, 0xA8)
 
 		return instructions
 	}
