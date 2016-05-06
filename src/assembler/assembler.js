@@ -139,7 +139,16 @@
 		},
 		'RTI': {},
 		'RTS': {},
-		'SBC': {},
+		'SBC': {
+			immediate: 0xE9,
+			zeroPage: 0xE5,
+			zeroPageX: 0xF5,
+			absolute: 0xED,
+			absoluteY: 0xFD,
+			absoluteX: 0xF9,
+			indexedIndirect: 0xE1,
+			indirectIndexed: 0xF1
+		},
 		'SEC': {},
 		'SED': {},
 		'SEI': {},

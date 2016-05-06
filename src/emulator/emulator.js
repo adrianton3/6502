@@ -188,6 +188,10 @@
 			state.A = oldValue >> 1 | (oldValue & 0b1) << 7
 		},
 
+		SBC (state, address) {
+			state.A -= state.memory[address]
+		},
+
 		STA (state, address) {
 			state.memory[address] = state.A
 		},
@@ -375,6 +379,17 @@
 		])
 
 		registerInstruction(instructionTypes.ROR_A, 0x6A)
+
+		registerInstructions(instructionTypes.SBC, [
+			[0xE9, addressModes.immediate],
+			[0xE5, addressModes.zeroPage],
+			[0xF5, addressModes.zeroPageX],
+			[0xED, addressModes.absolute],
+			[0xFD, addressModes.absoluteY],
+			[0xF9, addressModes.absoluteX],
+			[0xE1, addressModes.indexedIndirect],
+			[0xF1, addressModes.indirectIndexed]
+		])
 
 		registerInstructions(instructionTypes.STA, [
 			[0x85, addressModes.zeroPage],
