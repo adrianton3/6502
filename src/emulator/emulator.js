@@ -168,6 +168,26 @@
 			state.A |= state.memory[address]
 		},
 
+		ROL (state, address) {
+			const oldValue = state.memory[address]
+			state.memory[address] = oldValue << 1 | (oldValue & 0b10000000) >> 7
+		},
+
+		ROL_A (state) {
+			const oldValue = state.A
+			state.A = oldValue << 1 | (oldValue & 0b10000000) >> 7
+		},
+
+		ROR (state, address) {
+			const oldValue = state.memory[address]
+			state.memory[address] = oldValue >> 1 | (oldValue & 0b1) << 7
+		},
+
+		ROR_A (state) {
+			const oldValue = state.A
+			state.A = oldValue >> 1 | (oldValue & 0b1) << 7
+		},
+
 		STA (state, address) {
 			state.memory[address] = state.A
 		},
@@ -337,6 +357,24 @@
 			[0x01, addressModes.indexedIndirect],
 			[0x11, addressModes.indirectIndexed]
 		])
+
+		registerInstructions(instructionTypes.ROL, [
+			[0x26, addressModes.zeroPage],
+			[0x36, addressModes.zeroPageX],
+			[0x2E, addressModes.absolute],
+			[0x3E, addressModes.absoluteX]
+		])
+
+		registerInstruction(instructionTypes.ROL_A, 0x2A)
+
+		registerInstructions(instructionTypes.ROR, [
+			[0x66, addressModes.zeroPage],
+			[0x76, addressModes.zeroPageX],
+			[0x6E, addressModes.absolute],
+			[0x7E, addressModes.absoluteX]
+		])
+
+		registerInstruction(instructionTypes.ROR_A, 0x6A)
 
 		registerInstructions(instructionTypes.STA, [
 			[0x85, addressModes.zeroPage],

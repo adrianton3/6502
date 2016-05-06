@@ -123,8 +123,20 @@
 		'PHP': {},
 		'PLA': {},
 		'PLP': {},
-		'ROL': {},
-		'ROR': {},
+		'ROL': {
+			accumulator: 0x2A,
+			zeroPage: 0x26,
+			zeroPageX: 0x36,
+			absolute: 0x2E,
+			absoluteX: 0x3E
+		},
+		'ROR': {
+			accumulator: 0x6A,
+			zeroPage: 0x66,
+			zeroPageX: 0x76,
+			absolute: 0x6E,
+			absoluteX: 0x7E
+		},
 		'RTI': {},
 		'RTS': {},
 		'SBC': {},
