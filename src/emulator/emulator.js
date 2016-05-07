@@ -91,6 +91,16 @@
 		}
 	}
 
+	function push (state, value) {
+		state.memory[state.stackPointer + 0x0100] = value
+		state.stackPointer--
+	}
+
+	function pop (state) {
+		state.stackPointer++
+		return state.memory[state.stackPointer + 0x0100]
+	}
+
 	const instructionTypes = {
 		ADC (state, address) {
 			state.A += state.memory[address]
@@ -168,6 +178,22 @@
 			state.A |= state.memory[address]
 		},
 
+		PHA (state) {
+			push(state, state.A)
+		},
+
+		PHP (state) {
+			push(state, state.statusRegister)
+		},
+
+		PLA (state) {
+			state.A = pop(state)
+		},
+
+		PLP (state) {
+			state.statusRegister = pop(state)
+		},
+
 		ROL (state, address) {
 			const oldValue = state.memory[address]
 			state.memory[address] = oldValue << 1 | (oldValue & 0b10000000) >> 7
@@ -234,7 +260,7 @@
 			memory: new Uint8Array(0x10000),
 			programCounter: START_PROGRAM,
 			statusRegister: 0, // NV-B DIZC
-			stackPointer: 0x1FF,
+			stackPointer: 0xFF,
 			X: 0,
 			Y: 0,
 			A: 0
@@ -369,6 +395,14 @@
 			[0x01, addressModes.indexedIndirect],
 			[0x11, addressModes.indirectIndexed]
 		])
+
+		registerInstruction(instructionTypes.PHA, 0x48)
+
+		registerInstruction(instructionTypes.PHP, 0x08)
+
+		registerInstruction(instructionTypes.PLA, 0x68)
+
+		registerInstruction(instructionTypes.PLP, 0x28)
 
 		registerInstructions(instructionTypes.ROL, [
 			[0x26, addressModes.zeroPage],

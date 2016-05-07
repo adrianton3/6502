@@ -119,10 +119,10 @@
 			indexedIndirect: 0x01,
 			indirectIndexed: 0x11
 		},
-		'PHA': {},
-		'PHP': {},
-		'PLA': {},
-		'PLP': {},
+		'PHA': { implied: 0x48 },
+		'PHP': { implied: 0x08 },
+		'PLA': { implied: 0x68 },
+		'PLP': { implied: 0x28 },
 		'ROL': {
 			accumulator: 0x2A,
 			zeroPage: 0x26,
