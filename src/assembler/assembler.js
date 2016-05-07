@@ -173,9 +173,9 @@
 		},
 		'TAX': { implied: 0xAA },
 		'TAY': { implied: 0xA8 },
-		'TSX': {},
+		'TSX': { implied: 0xBA },
 		'TXA': { implied: 0x8A },
-		'TXS': {},
+		'TXS': { implied: 0x9A },
 		'TYA': { implied: 0x98 }
 	}
 

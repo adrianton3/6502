@@ -212,8 +212,16 @@
 			state.Y = state.A
 		},
 
+		TSX (state) {
+			state.X = state.stackPointer
+		},
+
 		TXA (state) {
 			state.A = state.X
+		},
+
+		TXS (state) {
+			state.stackPointer = state.X
 		},
 
 		TYA (state) {
@@ -417,7 +425,11 @@
 
 		registerInstruction(instructionTypes.TAY, 0xA8)
 
+		registerInstruction(instructionTypes.TSX, 0xBA)
+
 		registerInstruction(instructionTypes.TXA, 0x8A)
+
+		registerInstruction(instructionTypes.TXS, 0x9A)
 
 		registerInstruction(instructionTypes.TYA, 0x98)
 
