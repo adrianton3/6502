@@ -149,9 +149,9 @@
 			indexedIndirect: 0xE1,
 			indirectIndexed: 0xF1
 		},
-		'SEC': {},
-		'SED': {},
-		'SEI': {},
+		'SEC': { implied: 0x38 },
+		'SED': { implied: 0xF8 },
+		'SEI': { implied: 0x78 },
 		'STA': {
 			zeroPage: 0x85,
 			zeroPageX: 0x95,

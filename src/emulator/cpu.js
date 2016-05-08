@@ -106,6 +106,10 @@
 	const CLEAR_INTERRUPT_DISABLE = 0b11111011
 	const CLEAR_OVERFLOW = 0b10111111
 
+	const SET_CARRY = 0b00000001
+	const SET_DECIMAL = 0b00001000
+	const SET_INTERRUPT_DISABLE = 0b00000100
+
 	const instructionTypes = {
 		ADC (state, address) {
 			state.A += state.memory[address]
@@ -237,6 +241,18 @@
 
 		SBC (state, address) {
 			state.A -= state.memory[address]
+		},
+
+		SEC (state) {
+			state.statusRegister |= SET_CARRY
+		},
+
+		SED (state) {
+			state.statusRegister |= SET_DECIMAL
+		},
+
+		SEI (state) {
+			state.statusRegister |= SET_INTERRUPT_DISABLE
 		},
 
 		STA (state, address) {
@@ -461,6 +477,12 @@
 			[0xE1, addressModes.indexedIndirect],
 			[0xF1, addressModes.indirectIndexed]
 		])
+
+		registerInstruction(instructionTypes.SEC, 0x38)
+
+		registerInstruction(instructionTypes.SED, 0xF8)
+
+		registerInstruction(instructionTypes.SEI, 0x78)
 
 		registerInstructions(instructionTypes.STA, [
 			[0x85, addressModes.zeroPage],
