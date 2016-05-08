@@ -179,6 +179,17 @@
 			state.Y++
 		},
 
+		JMP (state, address) {
+			state.programCounter = address
+		},
+
+		JSR (state, address) {
+			const nextProgramCounter = state.programCounter + 2
+			push(nextProgramCounter >> 8)
+			push(nextProgramCounter & 0xFF)
+			state.programCounter = address
+		},
+
 		LDA (state, address) {
 			state.A = state.memory[address]
 		},
@@ -393,6 +404,13 @@
 		registerInstruction(instructionTypes.INX, 0xE8)
 
 		registerInstruction(instructionTypes.INY, 0xC8)
+
+		registerInstructions(instructionTypes.JMP, [
+			[0x4C, addressModes.absolute],
+			[0x6C, addressModes.indirect]
+		])
+
+		registerInstruction(instructionTypes.JSR, 0x20)
 
 		registerInstructions(instructionTypes.LDA, [
 			[0xA9, addressModes.immediate],

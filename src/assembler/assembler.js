@@ -75,8 +75,11 @@
 		},
 		'INX': { implied: 0xE8 },
 		'INY': { implied: 0xC8 },
-		'JMP': {},
-		'JSR': {},
+		'JMP': {
+			absolute: 0x4C,
+			indirect: 0x6C
+		},
+		'JSR': { absolute: 0x20 },
 		'LDA': {
 			immediate: 0xA9,
 			zeroPage: 0xA5,
