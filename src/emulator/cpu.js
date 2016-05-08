@@ -169,6 +169,14 @@
 			}
 		},
 
+		BIT (state, address) {
+			const value = state.memory[address]
+			state.statusRegister &= CLEAR_NEGATIVE & CLEAR_OVERFLOW & CLEAR_ZERO
+			if (state.A & value === 0) {
+				state.statusRegister |= SET_ZERO
+			}
+		},
+
 		BMI (state, address) {
 			if (state.statusRegister & SET_NEGATIVE !== 0) {
 				state.programCounter = address
@@ -477,6 +485,11 @@
 		registerInstruction(instructionTypes.BCS, 0xB0)
 
 		registerInstruction(instructionTypes.BEQ, 0xF0)
+
+		registerInstructions(instructionTypes.BIT, [
+			[0x24, addressModes.zeroPage],
+			[0x2C, addressModes.absolute]
+		])
 
 		registerInstruction(instructionTypes.BMI, 0x30)
 
