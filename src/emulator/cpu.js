@@ -101,6 +101,11 @@
 		return state.memory[state.stackPointer + 0x0100]
 	}
 
+	const CLEAR_CARRY = 0b11111110
+	const CLEAR_DECIMAL = 0b11110111
+	const CLEAR_INTERRUPT_DISABLE = 0b11111011
+	const CLEAR_OVERFLOW = 0b10111111
+
 	const instructionTypes = {
 		ADC (state, address) {
 			state.A += state.memory[address]
@@ -116,6 +121,22 @@
 
 		ASL_A (state) {
 			state.A <<= 1
+		},
+
+		CLC (state) {
+			state.statusRegister &= CLEAR_CARRY
+		},
+
+		CLD (state) {
+			state.statusRegister &= CLEAR_DECIMAL
+		},
+
+		CLI (state) {
+			state.statusRegister &= CLEAR_INTERRUPT_DISABLE
+		},
+
+		CLV (state) {
+			state.statusRegister &= CLEAR_OVERFLOW
 		},
 
 		DEC (state, address) {
@@ -315,6 +336,14 @@
 		])
 
 		registerInstruction(instructionTypes.ASL_A, 0x0A)
+
+		registerInstruction(instructionTypes.CLC, 0x18)
+
+		registerInstruction(instructionTypes.CLD, 0xD8)
+
+		registerInstruction(instructionTypes.CLI, 0x58)
+
+		registerInstruction(instructionTypes.CLV, 0xB8)
 
 		registerInstructions(instructionTypes.DEC, [
 			[0xC6, addressModes.zeroPage],
