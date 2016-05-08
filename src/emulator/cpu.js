@@ -250,6 +250,15 @@
 			state.A = oldValue >> 1 | (oldValue & 0b1) << 7
 		},
 
+		RTI (state) {
+			state.statusRegister = pop()
+			state.programCounter = pop() | pop() >> 8
+		},
+
+		RTS () {
+			state.programCounter = pop() | pop() >> 8
+		},
+
 		SBC (state, address) {
 			state.A -= state.memory[address]
 		},
@@ -484,6 +493,10 @@
 		])
 
 		registerInstruction(instructionTypes.ROR_A, 0x6A)
+
+		registerInstruction(instructionTypes.RTI, 0x40)
+
+		registerInstruction(instructionTypes.RTS, 0x60)
 
 		registerInstructions(instructionTypes.SBC, [
 			[0xE9, addressModes.immediate],

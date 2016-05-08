@@ -140,8 +140,8 @@
 			absolute: 0x6E,
 			absoluteX: 0x7E
 		},
-		'RTI': {},
-		'RTS': {},
+		'RTI': { implied: 0x40 },
+		'RTS': { implied: 0x60 },
 		'SBC': {
 			immediate: 0xE9,
 			zeroPage: 0xE5,
