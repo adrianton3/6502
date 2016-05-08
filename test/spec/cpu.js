@@ -3,7 +3,7 @@
 
 	const {
 		assembler: { assemble },
-		emulator: { makeCpu }
+		cpu: { make: makeCpu }
 	} = window.c64
 
 	const START_PROGRAM = 0x200
