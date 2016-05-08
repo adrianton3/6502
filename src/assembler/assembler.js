@@ -39,7 +39,7 @@
 		'BMI': { relative: 0x30 },
 		'BNE': { relative: 0xD0 },
 		'BPL': { relative: 0x10 },
-		'BRK': {},
+		'BRK': { implied: 0x00 },
 		'BVC': { relative: 0x50 },
 		'BVS': { relative: 0x70 },
 		'CLC': { implied: 0x18 },
@@ -128,7 +128,7 @@
 			absolute: 0x4E,
 			absoluteX: 0x5E
 		},
-		'NOP': {},
+		'NOP': { implied: 0xEA },
 		'ORA': {
 			immediate: 0x09,
 			zeroPage: 0x05,

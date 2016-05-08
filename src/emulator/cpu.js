@@ -104,6 +104,7 @@
 
 	const SET_NEGATIVE = 0b10000000
 	const SET_OVERFLOW = 0b01000000
+	const SET_BREAK = 0b00010000
 	const SET_DECIMAL = 0b00001000
 	const SET_INTERRUPT_DISABLE = 0b00000100
 	const SET_ZERO = 0b00000010
@@ -184,6 +185,19 @@
 			if (state.statusRegister & SET_NEGATIVE === 0) {
 				state.programCounter = address
 			}
+		},
+
+		BRK (state) {
+			const nextProgramCounter = state.programCounter + 1
+			push(nextProgramCounter >> 8)
+			push(nextProgramCounter & 0xFF)
+
+			push(state.statusRegister)
+
+			state.programCounter = state.memory[0xFFFE] |
+				state.memory[0xFFFE + 1] << 8
+
+			state.statusRegister |= SET_BREAK
 		},
 
 		BVC (state, address) {
@@ -292,6 +306,8 @@
 		LSR_A (state) {
 			state.A >>= 1
 		},
+
+		NOP () {},
 
 		ORA (state, address) {
 			state.A |= state.memory[address]
@@ -468,6 +484,8 @@
 
 		registerInstruction(instructionTypes.BPL, 0x10)
 
+		registerInstruction(instructionTypes.BRK, 0x00)
+
 		registerInstruction(instructionTypes.BVC, 0x50)
 
 		registerInstruction(instructionTypes.BVS, 0x70)
@@ -555,6 +573,8 @@
 		])
 
 		registerInstruction(instructionTypes.LSR_A, 0x4A)
+
+		registerInstruction(instructionTypes.NOP, 0xEA)
 
 		registerInstructions(instructionTypes.ORA, [
 			[0x09, addressModes.immediate],
