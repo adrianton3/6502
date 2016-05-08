@@ -95,6 +95,20 @@
 		}
 	}
 
+	const CLEAR_NEGATIVE = 0b01111111
+	const CLEAR_OVERFLOW = 0b10111111
+	const CLEAR_DECIMAL = 0b11110111
+	const CLEAR_INTERRUPT_DISABLE = 0b11111011
+	const CLEAR_ZERO = 0b11111101
+	const CLEAR_CARRY = 0b11111110
+
+	const SET_NEGATIVE = 0b10000000
+	const SET_OVERFLOW = 0b01000000
+	const SET_DECIMAL = 0b00001000
+	const SET_INTERRUPT_DISABLE = 0b00000100
+	const SET_ZERO = 0b00000010
+	const SET_CARRY = 0b00000001
+
 	function push (state, value) {
 		state.memory[state.stackPointer + 0x0100] = value
 		state.stackPointer--
@@ -105,17 +119,19 @@
 		return state.memory[state.stackPointer + 0x0100]
 	}
 
-	const CLEAR_OVERFLOW = 0b10111111
-	const CLEAR_DECIMAL = 0b11110111
-	const CLEAR_INTERRUPT_DISABLE = 0b11111011
-	const CLEAR_CARRY = 0b11111110
+	function compare (state, difference) {
+		state.statusRegister &= CLEAR_NEGATIVE & CLEAR_ZERO & CLEAR_CARRY
 
-	const SET_NEGATIVE = 0b10000000
-	const SET_OVERFLOW = 0b01000000
-	const SET_DECIMAL = 0b00001000
-	const SET_INTERRUPT_DISABLE = 0b00000100
-	const SET_ZERO = 0b00000010
-	const SET_CARRY = 0b00000001
+		if (difference >= 0) {
+			state.statusRegister |= SET_CARRY
+
+			if (difference === 0) {
+				state.statusRegister |= SET_ZERO
+			}
+		} else {
+			state.statusRegister |= SET_NEGATIVE
+		}
+	}
 
 	const instructionTypes = {
 		ADC (state, address) {
@@ -196,6 +212,18 @@
 
 		CLV (state) {
 			state.statusRegister &= CLEAR_OVERFLOW
+		},
+
+		CMP (state, address) {
+			compare(state, state.A - state.memory[address])
+		},
+
+		CPX (state, address) {
+			compare(state, state.X - state.memory[address])
+		},
+
+		CPY (state, address) {
+			compare(state, state.Y - state.memory[address])
 		},
 
 		DEC (state, address) {

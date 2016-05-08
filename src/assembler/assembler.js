@@ -46,9 +46,26 @@
 		'CLD': { implied: 0xD8 },
 		'CLI': { implied: 0x58 },
 		'CLV': { implied: 0xB8 },
-		'CMP': {},
-		'CPX': {},
-		'CPY': {},
+		'CMP': {
+			immediate: 0xC9,
+			zeroPage: 0xC5,
+			zeroPageX: 0xD5,
+			absolute: 0xCD,
+			absoluteY: 0xDD,
+			absoluteX: 0xD9,
+			indexedIndirect: 0xC1,
+			indirectIndexed: 0xD1
+		},
+		'CPX': {
+			immediate: 0xE0,
+			zeroPage: 0xE4,
+			absolute: 0xEC
+		},
+		'CPY': {
+			immediate: 0xC0,
+			zeroPage: 0xC4,
+			absolute: 0xCC
+		},
 		'DEC': {
 			zeroPage: 0xC6,
 			zeroPageX: 0xD6,
