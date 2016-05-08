@@ -58,7 +58,11 @@
 
 		relative: {
 			getAddress ({ memory, programCounter }) {
-				return programCounter + memory[programCounter]
+				const offset = memory[programCounter]
+
+				return offset & 0b10000000 ?
+					programCounter - (offset & 0b01111111) :
+					programCounter + offset
 			},
 			bytes: 1
 		},
@@ -101,14 +105,17 @@
 		return state.memory[state.stackPointer + 0x0100]
 	}
 
-	const CLEAR_CARRY = 0b11111110
+	const CLEAR_OVERFLOW = 0b10111111
 	const CLEAR_DECIMAL = 0b11110111
 	const CLEAR_INTERRUPT_DISABLE = 0b11111011
-	const CLEAR_OVERFLOW = 0b10111111
+	const CLEAR_CARRY = 0b11111110
 
-	const SET_CARRY = 0b00000001
+	const SET_NEGATIVE = 0b10000000
+	const SET_OVERFLOW = 0b01000000
 	const SET_DECIMAL = 0b00001000
 	const SET_INTERRUPT_DISABLE = 0b00000100
+	const SET_ZERO = 0b00000010
+	const SET_CARRY = 0b00000001
 
 	const instructionTypes = {
 		ADC (state, address) {
@@ -125,6 +132,54 @@
 
 		ASL_A (state) {
 			state.A <<= 1
+		},
+
+		BCC (state, address) {
+			if (state.statusRegister & SET_CARRY === 0) {
+				state.programCounter = address
+			}
+		},
+
+		BCS (state, address) {
+			if (state.statusRegister & SET_CARRY !== 0) {
+				state.programCounter = address
+			}
+		},
+
+		BEQ (state, address) {
+			if (state.statusRegister & SET_ZERO !== 0) {
+				state.programCounter = address
+			}
+		},
+
+		BMI (state, address) {
+			if (state.statusRegister & SET_NEGATIVE !== 0) {
+				state.programCounter = address
+			}
+		},
+
+		BNE (state, address) {
+			if (state.statusRegister & SET_ZERO === 0) {
+				state.programCounter = address
+			}
+		},
+
+		BPL (state, address) {
+			if (state.statusRegister & SET_NEGATIVE === 0) {
+				state.programCounter = address
+			}
+		},
+
+		BVC (state, address) {
+			if (state.statusRegister & SET_OVERFLOW === 0) {
+				state.programCounter = address
+			}
+		},
+
+		BVS (state, address) {
+			if (state.statusRegister & SET_OVERFLOW !== 0) {
+				state.programCounter = address
+			}
 		},
 
 		CLC (state) {
@@ -372,6 +427,22 @@
 		])
 
 		registerInstruction(instructionTypes.ASL_A, 0x0A)
+
+		registerInstruction(instructionTypes.BCC, 0x90)
+
+		registerInstruction(instructionTypes.BCS, 0xB0)
+
+		registerInstruction(instructionTypes.BEQ, 0xF0)
+
+		registerInstruction(instructionTypes.BMI, 0x30)
+
+		registerInstruction(instructionTypes.BNE, 0xD0)
+
+		registerInstruction(instructionTypes.BPL, 0x10)
+
+		registerInstruction(instructionTypes.BVC, 0x50)
+
+		registerInstruction(instructionTypes.BVS, 0x70)
 
 		registerInstruction(instructionTypes.CLC, 0x18)
 
