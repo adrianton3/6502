@@ -9,7 +9,14 @@
 		return {
 			memory: new Uint8Array(0x10000),
 			programCounter: START_PROGRAM,
-			statusRegister: 0, // NV-B DIZC
+			status: {
+				negative: 0,
+				overflow: 0,
+				decimal: 0,
+				interrupt: 0,
+				zero: 0,
+				carry: 0,
+			},
 			stackPointer: 0xFF,
 			X: 0,
 			Y: 0,

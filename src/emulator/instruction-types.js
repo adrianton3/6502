@@ -1,193 +1,230 @@
 (function () {
 	'use strict'
 
-	const CLEAR_NEGATIVE = 0b01111111
-	const CLEAR_OVERFLOW = 0b10111111
-	const CLEAR_DECIMAL = 0b11110111
-	const CLEAR_INTERRUPT_DISABLE = 0b11111011
-	const CLEAR_ZERO = 0b11111101
-	const CLEAR_CARRY = 0b11111110
+	const stackStart = 0x0100
 
-	const SET_NEGATIVE = 0b10000000
-	const SET_OVERFLOW = 0b01000000
-	const SET_BREAK = 0b00010000
-	const SET_DECIMAL = 0b00001000
-	const SET_INTERRUPT_DISABLE = 0b00000100
-	const SET_ZERO = 0b00000010
-	const SET_CARRY = 0b00000001
-
-	function push (state, value) {
-		state.memory[state.stackPointer + 0x0100] = value
+	function push8 (state, value) {
+		state.memory[stackStart + state.stackPointer] = value
 		state.stackPointer--
 	}
 
-	function pop (state) {
-		state.stackPointer++
-		return state.memory[state.stackPointer + 0x0100]
+	function push16 (state, value) {
+		state.memory[stackStart + state.stackPointer] = value >> 8
+		state.memory[stackStart + state.stackPointer - 1] = value
+		state.stackPointer -= 2
 	}
 
-	function compare (state, difference) {
-		state.statusRegister &= CLEAR_NEGATIVE & CLEAR_ZERO & CLEAR_CARRY
+	function pushStatus (state) {
+		const { status } = state
 
-		if (difference >= 0) {
-			state.statusRegister |= SET_CARRY
+        // NV-B DIZC
+        const value = status.negative << 7 |
+            status.overflow << 6 |
+            1 << 5 |
+            1 << 4 |
+            status.decimal << 3 |
+            status.interrupt << 2 |
+            status.zero << 1 |
+            status.carry << 0
 
-			if (difference === 0) {
-				state.statusRegister |= SET_ZERO
-			}
-		} else {
-			state.statusRegister |= SET_NEGATIVE
-		}
+		push8(state, value)
+	}
+
+	function pop8 (state) {
+		state.stackPointer++
+		return state.memory[stackStart + state.stackPointer]
+    }
+
+    function pop16 (state) {
+		state.stackPointer += 2
+        return (state.memory[stackStart + state.stackPointer] << 8) |
+            state.memory[stackStart + state.stackPointer - 1]
+	}
+
+	function popStatus (state) {
+		const { status } = state
+
+		const value = pop8(state)
+
+		status.negative = (value & 0x80) >> 7
+		status.overflow = (value & 0x40) >> 6
+		// -
+		// -
+		status.decimal = (value & 0x08) >> 3
+		status.interrupt = (value & 0x04) >> 2
+		status.zero = (value & 0x02) >> 1
+		status.carry = value & 0x01
+	}
+
+	function updateNz (state, value) {
+		state.status.negative = (value & 0x80) >> 7
+		state.status.zero = value === 0 ? 1 : 0
+	}
+
+	function compare (state, a, b) {
+		const diff = a - b
+		state.status.carry = diff >= 0 ? 1 : 0
+		updateNz(diff)
 	}
 
 	const instructionTypes = {
 		ADC (state, address) {
-			state.A += state.memory[address]
+			const operand = state.memory[address]
+			const value = state.A + operand + state.status.carry
+			state.status.carry = (value & 0x100) === 0 ? 0 : 1
+			state.status.overflow = (~(state.A ^ operand) & (state.A ^ value) & 0x80) >> 7
+			state.A = value & 0xFF
+			updateNz(state, state.A)
 		},
 
 		AND (state, address) {
 			state.A &= state.memory[address]
+			updateNz(state, state.A)
 		},
 
 		ASL (state, address) {
-			state.A = state.memory[address] << 1
+			state.status.carry = (state.memory[address] & 0x80) >> 7
+			state.memory[address] <<= 1
+			updateNz(state, state.memory[address])
 		},
 
 		ASL_A (state) {
+			state.status.carry = (state.A & 0x80) >> 7
 			state.A <<= 1
+			state.A &= 0xFF
+			updateNz(state, state.A)
 		},
 
 		BCC (state, address) {
-			if (state.statusRegister & SET_CARRY === 0) {
+			if (state.status.carry === 0) {
 				state.programCounter = address
 			}
 		},
 
 		BCS (state, address) {
-			if (state.statusRegister & SET_CARRY !== 0) {
+			if (state.status.carry !== 0) {
 				state.programCounter = address
 			}
 		},
 
 		BEQ (state, address) {
-			if (state.statusRegister & SET_ZERO !== 0) {
+			if (state.status.zero !== 0) {
 				state.programCounter = address
 			}
 		},
 
 		BIT (state, address) {
-			const value = state.memory[address]
-			state.statusRegister &= CLEAR_NEGATIVE & CLEAR_OVERFLOW & CLEAR_ZERO
-			if (state.A & value === 0) {
-				state.statusRegister |= SET_ZERO
-			}
+			const operand = state.memory[address]
+
+			state.status.negative = (operand & 0x80) >> 7
+			state.status.overflow = (operand & 0x40) >> 6
+			state.status.zero = (state.A & operand) === 0 ? 1 : 0
 		},
 
 		BMI (state, address) {
-			if (state.statusRegister & SET_NEGATIVE !== 0) {
+			if (state.status.negative !== 0) {
 				state.programCounter = address
 			}
 		},
 
 		BNE (state, address) {
-			if (state.statusRegister & SET_ZERO === 0) {
+			if (state.status.zero === 0) {
 				state.programCounter = address
 			}
 		},
 
 		BPL (state, address) {
-			if (state.statusRegister & SET_NEGATIVE === 0) {
+			if (state.status.negative === 0) {
 				state.programCounter = address
 			}
 		},
 
 		BRK (state) {
-			const nextProgramCounter = state.programCounter + 1
-			push(nextProgramCounter >> 8)
-			push(nextProgramCounter & 0xFF)
+			push16(state, state.programCounter + 2)
+			pushStatus(state)
 
-			push(state.statusRegister)
-
-			state.programCounter = state.memory[0xFFFE] |
+			state.programCounter =
+				state.memory[0xFFFE] |
 				state.memory[0xFFFE + 1] << 8
-
-			state.statusRegister |= SET_BREAK
 		},
 
 		BVC (state, address) {
-			if (state.statusRegister & SET_OVERFLOW === 0) {
+			if (state.status.overflow === 0) {
 				state.programCounter = address
 			}
 		},
 
 		BVS (state, address) {
-			if (state.statusRegister & SET_OVERFLOW !== 0) {
+			if (state.status.overflow !== 0) {
 				state.programCounter = address
 			}
 		},
 
 		CLC (state) {
-			state.statusRegister &= CLEAR_CARRY
+			state.status.carry = 0
 		},
 
 		CLD (state) {
-			state.statusRegister &= CLEAR_DECIMAL
+			state.status.decimal = 0
 		},
 
 		CLI (state) {
-			state.statusRegister &= CLEAR_INTERRUPT_DISABLE
+			state.status.interrupt = 0
 		},
 
 		CLV (state) {
-			state.statusRegister &= CLEAR_OVERFLOW
+			state.status.overflow = 0
 		},
 
 		CMP (state, address) {
-			compare(state, state.A - state.memory[address])
+			compare(state, state.A, state.memory[address])
 		},
 
 		CPX (state, address) {
-			compare(state, state.X - state.memory[address])
+			compare(state, state.X, state.memory[address])
 		},
 
 		CPY (state, address) {
-			compare(state, state.Y - state.memory[address])
+			compare(state, state.Y, state.memory[address])
 		},
 
 		DEC (state, address) {
 			state.memory[address]--
+			updateNz(state, state.memory[address])
 		},
 
 		DEX (state) {
-			if (state.X === 0) {
-				state.X = 255
-			} else {
-				state.X--
-			}
+			state.X--
+			state.X &= 0xFF
+			updateNz(state, state.X)
 		},
 
 		DEY (state) {
-			if (state.Y === 0) {
-				state.Y = 255
-			} else {
-				state.Y--
-			}
+			state.Y--
+			state.Y &= 0xFF
+			updateNz(state, state.Y)
 		},
 
 		EOR (state, address) {
 			state.A ^= state.memory[address]
+			updateNz(state, state.A)
 		},
 
 		INC (state, address) {
 			state.memory[address]++
+			updateNz(state, state.memory[address])
 		},
 
 		INX (state) {
 			state.X++
+			state.X &= 0xFF
+			updateNz(state, state.X)
 		},
 
 		INY (state) {
 			state.Y++
+			state.Y &= 0xFF
+			updateNz(state, state.Y)
 		},
 
 		JMP (state, address) {
@@ -195,81 +232,98 @@
 		},
 
 		JSR (state, address) {
-			const nextProgramCounter = state.programCounter + 2
-			push(nextProgramCounter >> 8)
-			push(nextProgramCounter & 0xFF)
+			push16(state.programCounter + 2)
 			state.programCounter = address
 		},
 
 		LDA (state, address) {
 			state.A = state.memory[address]
+			updateNz(state, state.A)
 		},
 
 		LDX (state, address) {
 			state.X = state.memory[address]
+			updateNz(state, state.X)
 		},
 
 		LDY (state, address) {
 			state.Y = state.memory[address]
+			updateNz(state, state.Y)
 		},
 
 		LSR (state, address) {
+			state.status.carry = state.memory[address] & 0x01
 			state.memory[address] >>= 1
+			state.status.negative = 0
+			state.status.zero = state.memory[address] === 0 ? 1 : 0
 		},
 
 		LSR_A (state) {
+			state.status.carry = state.memory[address] & 0x01
 			state.A >>= 1
+			state.status.negative = 0
+			state.status.zero = state.A === 0 ? 1 : 0
 		},
 
 		NOP () {},
 
 		ORA (state, address) {
 			state.A |= state.memory[address]
+			updateNz(state, state.A)
 		},
 
 		PHA (state) {
-			push(state, state.A)
+			push8(state, state.A)
 		},
 
 		PHP (state) {
-			push(state, state.statusRegister)
+			pushStatus(state)
 		},
 
 		PLA (state) {
-			state.A = pop(state)
+			state.A = pop8(state)
+			updateNz(state, state.A)
 		},
 
 		PLP (state) {
-			state.statusRegister = pop(state)
+			popStatus(state)
 		},
 
 		ROL (state, address) {
-			const oldValue = state.memory[address]
-			state.memory[address] = oldValue << 1 | (oldValue & 0b10000000) >> 7
+			const value = state.memory[address]
+			state.memory[address] = (value << 1) | state.status.carry
+			state.status.carry = (value & 0x80) >> 7
+			updateNz(state, state.memory[address])
 		},
 
 		ROL_A (state) {
-			const oldValue = state.A
-			state.A = oldValue << 1 | (oldValue & 0b10000000) >> 7
+			const value = state.A
+			state.A = ((value << 1) & 0xFF) | state.status.carry
+			state.status.carry = (value & 0x80) >> 7
+			updateNz(state, state.A)
 		},
 
 		ROR (state, address) {
-			const oldValue = state.memory[address]
-			state.memory[address] = oldValue >> 1 | (oldValue & 0b1) << 7
+			const value = state.memory[address]
+			state.memory[address] = (value >> 1) | (state.status.carry << 7)
+			state.status.carry = value & 0x01
+			updateNz(state, state.memory[address])
 		},
 
 		ROR_A (state) {
-			const oldValue = state.A
-			state.A = oldValue >> 1 | (oldValue & 0b1) << 7
+			const value = state.A
+			state.A = (value >> 1) | (state.status.carry << 7)
+			state.status.carry = value & 0x01
+			updateNz(state, state.A)
 		},
 
 		RTI (state) {
-			state.statusRegister = pop()
-			state.programCounter = pop() | pop() >> 8
+			popStatus(state)
+			state.programCounter = pop16(state)
 		},
 
 		RTS () {
-			state.programCounter = pop() | pop() >> 8
+			state.programCounter = pop16(state)
 		},
 
 		SBC (state, address) {
@@ -277,15 +331,15 @@
 		},
 
 		SEC (state) {
-			state.statusRegister |= SET_CARRY
+			state.status.carry = 1
 		},
 
 		SED (state) {
-			state.statusRegister |= SET_DECIMAL
+			state.status.decimal = 1
 		},
 
 		SEI (state) {
-			state.statusRegister |= SET_INTERRUPT_DISABLE
+			state.status.interrupt = 1
 		},
 
 		STA (state, address) {
@@ -302,18 +356,22 @@
 
 		TAX (state) {
 			state.X = state.A
+			updateNz(state, state.X)
 		},
 
 		TAY (state) {
 			state.Y = state.A
+			updateNz(state, state.Y)
 		},
 
 		TSX (state) {
 			state.X = state.stackPointer
+			updateNz(state, state.X)
 		},
 
 		TXA (state) {
 			state.A = state.X
+			updateNz(state, state.A)
 		},
 
 		TXS (state) {
@@ -322,6 +380,7 @@
 
 		TYA (state) {
 			state.A = state.Y
+			updateNz(state, state.A)
 		}
 	}
 
