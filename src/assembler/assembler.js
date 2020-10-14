@@ -269,7 +269,7 @@
 		const lines = string.split('\n')
 
 		const encoded = lines.map((line) => {
-			const [_, mnemonic, operand] = line.match(/(\w+)(?:\s+([\dA-F#$(),XY]+))?/)
+			const [_, mnemonic, operand] = line.match(/(\w+)(?:\s+([\dA-Fa-f#$(),XY]+))?/)
 
 			const variants = instructions[mnemonic]
 			const matchVariant = Object.keys(variants).find((name) =>
