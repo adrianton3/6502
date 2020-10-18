@@ -3,12 +3,10 @@
 
 	const { makeInstructions } = window.c64.cpu
 
-	const START_PROGRAM = 0x200
-
-	function makeState () {
+	function makeState ({ programStart }) {
 		return {
 			memory: new Uint8Array(0x10000),
-			programCounter: START_PROGRAM,
+			programCounter: programStart,
 			status: {
 				negative: 0,
 				overflow: 0,
@@ -24,17 +22,19 @@
 		}
 	}
 
-	function makeCpu () {
+	function makeCpu (options = {}) {
+        const programStart = options.programStart ?? 0x0200
+
 		const instructions = makeInstructions()
 
-		const state = makeState()
+		const state = makeState({ programStart })
 
 		function getState() {
 			return state
 		}
 
 		function load (romData) {
-			state.memory.set(romData, START_PROGRAM)
+			state.memory.set(romData, programStart)
 		}
 
 		function tick () {
