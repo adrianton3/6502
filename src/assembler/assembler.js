@@ -268,10 +268,19 @@
 	function assemble (string) {
 		const lines = string.split('\n')
 
-		const encoded = lines.map((line) => {
-			const [_, mnemonic, operand] = line.match(/(\w+)(?:\s+([\dA-Fa-f#$(),XY]+))?/)
+		const encoded = lines.map((lineRaw) => {
+            const line = lineRaw.includes(';')
+                ? lineRaw.slice(0, lineRaw.indexOf(';'))
+                : lineRaw
 
-			const variants = instructions[mnemonic]
+            const match = line.match(/(\w+)(?:\s+([\dA-Fa-f#$(),XY]+))?/)
+            if (match == null) {
+                return []
+            }
+
+			const [_, mnemonic, operand] = match
+
+			const variants = instructions[mnemonic.toUpperCase()]
 			const matchVariant = Object.keys(variants).find((name) =>
 				matchers[name].test(operand)
 			)
