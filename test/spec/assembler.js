@@ -45,6 +45,10 @@
 			{ code: 'DEC $23,X', hex: [0xd6, 0x23] },
 			{ code: 'DEC $2345', hex: [0xce, 0x45, 0x23] },
 			{ code: 'DEC $2345,X', hex: [0xde, 0x45, 0x23] },
+        ],
+        'BCC': [
+            { code: 'BCC 3', hex: [0x90, 0x03] },
+            { code: 'BCC -5', hex: [0x90, 0xfb] },
 		],
 		'DEX': [
 			{ code: 'DEX', hex: [0xca] },

@@ -5,7 +5,7 @@
 		absolute: {
 			getAddress ({ memory, programCounter }) {
 				return memory[programCounter] |
-					memory[programCounter + 1] << 8
+					(memory[programCounter + 1] << 8)
 			},
 			bytes: 2
 		},
@@ -13,7 +13,7 @@
 		absoluteX: {
 			getAddress ({ memory, programCounter, X }) {
 				return memory[programCounter + X] |
-					memory[programCounter + X + 1] << 8
+					(memory[programCounter + X + 1] << 8)
 			},
 			bytes: 2
 		},
@@ -21,7 +21,7 @@
 		absoluteY: {
 			getAddress ({ memory, programCounter, Y }) {
 				return memory[programCounter + Y] |
-					memory[programCounter + Y + 1] << 8
+					(memory[programCounter + Y + 1] << 8)
 			},
 			bytes: 2
 		},
@@ -58,9 +58,9 @@
 			getAddress ({ memory, programCounter }) {
 				const offset = memory[programCounter]
 
-				return offset & 0b10000000 ?
-				programCounter - (offset & 0b01111111) :
-				programCounter + offset
+                return (offset & 0x80) === 0
+                    ? programCounter + offset
+				    : programCounter + (offset & 0x7F) - 128
 			},
 			bytes: 1
 		},
@@ -68,7 +68,8 @@
 		indirect: {
 			getAddress ({ memory, programCounter }) {
 				const addressAddress = memory[programCounter] |
-					memory[programCounter + 1] << 8
+                    (memory[programCounter + 1] << 8)
+
 				return memory[addressAddress]
 			},
 			bytes: 2
@@ -77,8 +78,10 @@
 		indexedIndirect: {
 			getAddress ({ memory, programCounter, X }) {
 				const address = memory[programCounter + X] |
-					memory[programCounter + X + 1] << 8
-				return memory[address] | memory[address + 1] << 8
+                    (memory[programCounter + X + 1] << 8)
+
+                return memory[address] |
+                    (memory[address + 1] << 8)
 			},
 			bytes: 1
 		},
@@ -86,8 +89,10 @@
 		indirectIndexed: {
 			getAddress ({ memory, programCounter, Y }) {
 				const address = memory[programCounter] |
-					memory[programCounter + 1] << 8
-				return memory[address + Y] | memory[address + Y + 1] << 8
+                    (memory[programCounter + 1] << 8)
+
+                return memory[address + Y] |
+                    (memory[address + Y + 1] << 8)
 			},
 			bytes: 1
 		}

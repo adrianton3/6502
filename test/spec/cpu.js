@@ -82,6 +82,13 @@
 		}, {
 			code: 'ASL $2345,X',
 			result: { programCounter: START_PROGRAM + 3, A: 0 }
+        }],
+        'BCC': [{
+			code: 'BCC 3',
+			result: { programCounter: START_PROGRAM + 2 + 3 }
+		}, {
+			code: 'BCC -5',
+			result: { programCounter: START_PROGRAM + 2 - 5 }
 		}],
 		'DEC': [{
 			code: 'DEC $23',

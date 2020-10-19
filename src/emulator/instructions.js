@@ -52,28 +52,28 @@
 
 		registerInstruction(instructionTypes.ASL_A, 0x0A)
 
-		registerInstruction(instructionTypes.BCC, 0x90)
+		registerInstruction(instructionTypes.BCC, 0x90, addressModes.relative)
 
-		registerInstruction(instructionTypes.BCS, 0xB0)
+		registerInstruction(instructionTypes.BCS, 0xB0, addressModes.relative)
 
-		registerInstruction(instructionTypes.BEQ, 0xF0)
+		registerInstruction(instructionTypes.BEQ, 0xF0, addressModes.relative)
 
 		registerInstructions(instructionTypes.BIT, [
 			[0x24, addressModes.zeroPage],
 			[0x2C, addressModes.absolute]
 		])
 
-		registerInstruction(instructionTypes.BMI, 0x30)
+		registerInstruction(instructionTypes.BMI, 0x30, addressModes.relative)
 
-		registerInstruction(instructionTypes.BNE, 0xD0)
+		registerInstruction(instructionTypes.BNE, 0xD0, addressModes.relative)
 
-		registerInstruction(instructionTypes.BPL, 0x10)
+		registerInstruction(instructionTypes.BPL, 0x10, addressModes.relative)
 
 		registerInstruction(instructionTypes.BRK, 0x00)
 
-		registerInstruction(instructionTypes.BVC, 0x50)
+		registerInstruction(instructionTypes.BVC, 0x50, addressModes.relative)
 
-		registerInstruction(instructionTypes.BVS, 0x70)
+		registerInstruction(instructionTypes.BVS, 0x70, addressModes.relative)
 
 		registerInstruction(instructionTypes.CLC, 0x18)
 
