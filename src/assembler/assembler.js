@@ -197,71 +197,93 @@
 		'TXA': { implied: 0x8A },
 		'TXS': { implied: 0x9A },
 		'TYA': { implied: 0x98 }
-	}
+    }
+
+    function parseValue (string) {
+        return string[0] === '$'
+            ? parseInt(string.slice(1), 16)
+            : parseInt(string, 10)
+    }
 
 	function parseByte (left = 0, right = 0) {
 		return (string) => {
-			const trimmed = string.substring(left + 1, string.length - right)
-			return [parseInt(trimmed, 16)]
+            const trimmed = string.substring(left, string.length - right)
+			return [parseValue(trimmed)]
+		}
+    }
+
+    function parseSignedByte (left = 0, right = 0) {
+		return (string) => {
+            const trimmed = string.substring(left, string.length - right)
+            const valueRaw = parseValue(trimmed)
+            const value = valueRaw >= 0
+                ? (valueRaw & 0x7F)
+                : ((valueRaw + 128) | 0x80)
+
+			return [value]
 		}
 	}
 
 	function parseWord (left = 0, right = 0) {
 		return (string) => {
-			const trimmed = string.substring(left + 1, string.length - right)
-			const value = parseInt(trimmed, 16)
+			const trimmed = string.substring(left, string.length - right)
+			const value = parseValue(trimmed)
 			return [value & 0xFF, value >> 8]
 		}
-	}
+    }
 
 	const matchers = {
 		accumulator: {
 			test: (string) => string === 'A',
-			extract: () => []
+			extract: () => [],
 		},
 		implied: {
 			test: (string) => string === undefined,
-			extract: () => []
+			extract: () => [],
 		},
 		immediate: {
-			test: (string) => /^#\$[\dA-Fa-f]{2}$/.test(string),
-			extract: parseByte(1)
-		},
+			test: (string) => /^#\$?[\dA-Fa-f]+$/.test(string),
+			extract: parseByte(1),
+        },
+        relative: {
+            test: (string) => /^-?\d+$/.test(string),
+            extract: parseSignedByte(),
+        },
 		zeroPage: {
 			test: (string) => /^\$[\dA-Fa-f]{2}$/.test(string),
-			extract: parseByte()
+			extract: parseByte(),
 		},
 		zeroPageX: {
 			test: (string) => /^\$[\dA-Fa-f]{2},X$/.test(string),
-			extract: parseByte(0, 2)
+			extract: parseByte(0, 2),
 		},
 		zeroPageY: {
-			test: (string) => /^\$[\dA-F]{2},Y$/.test(string),
-			extract: parseByte(0, 2)
+			test: (string) => /^\$[\dA-Fa-f]{2},Y$/.test(string),
+			extract: parseByte(0, 2),
 		},
 		absolute: {
-			test: (string) => /^\$[\dA-F]{4}$/.test(string),
-			extract: parseWord()
+			test: (string) => /^\$[\dA-Fa-f]{4}$/.test(string),
+			extract: parseWord(),
 		},
 		absoluteX: {
-			test: (string) => /^\$[\dA-F]{4},X$/.test(string),
-			extract: parseWord(0, 2)
+			test: (string) => /^\$[\dA-Fa-f]{4},X$/.test(string),
+			extract: parseWord(0, 2),
 		},
 		absoluteY: {
-			test: (string) => /^\$[\dA-F]{4},Y$/.test(string),
-			extract: parseWord(0, 2)
+			test: (string) => /^\$[\dA-Fa-f]{4},Y$/.test(string),
+			extract: parseWord(0, 2),
 		},
 		indirect: {
-			test: (string) => /^\(\$[\dA-F]{4}\)$/.test(string),
-			extract: parseWord(1, 1)
+			test: (string) => /^\(\$[\dA-Fa-f]{4}\)$/.test(string),
+			extract: parseWord(1, 1),
 		},
 		indexedIndirect: {
-			test: (string) => /^\(\$[\dA-F]{2},X\)$/.test(string),
-			extract: parseByte(1, 3)
+			test: (string) => /^\(\$[\dA-Fa-f]{2},X\)$/.test(string),
+			extract: parseByte(1, 3),
 		},
 		indirectIndexed: {
-			test: (string) => /^\(\$[\dA-F]{2}\),Y$/.test(string),
-			extract: parseByte(1, 3)
+			test: (string) => /^\(\$[\dA-Fa-f]{2}\),Y$/.test(string),
+			extract: parseByte(1, 3),
 		}
 	}
 
@@ -273,7 +295,7 @@
                 ? lineRaw.slice(0, lineRaw.indexOf(';'))
                 : lineRaw
 
-            const match = line.match(/(\w+)(?:\s+([\dA-Fa-f#$(),XY]+))?/)
+            const match = line.match(/(\w+)(?:\s+([-\dA-Fa-f#$(),XY]+))?/)
             if (match == null) {
                 return []
             }
@@ -294,9 +316,24 @@
 			}
 		})
 
-		return [].concat(...encoded)
-	}
+		return encoded
+    }
+
+    function assembleBlob (string) {
+        const result = assemble(string)
+
+        return [].concat(...result)
+    }
+
+    function assembleDebug (string) {
+        const result = assemble(string)
+
+        return {
+            lines: result,
+            blob: [].concat(...result)
+        }
+    }
 
 	window.c64 = window.c64 || {}
-	window.c64.assembler = { assemble }
+	window.c64.assembler = { assemble: assembleBlob, assembleDebug }
 })()

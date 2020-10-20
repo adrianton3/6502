@@ -5,10 +5,12 @@
     <title>6502</title>
 </head>
 <body>
-    <textarea id="in" style="width:512px;height:256px;"></textarea>
-    <textarea id="out" style="width:512px;height:256px;" readonly></textarea>
+    <textarea id="in" style="width:256px;height:256px;"></textarea>
+    <textarea id="out-rom" style="width:128px;height:256px;" readonly></textarea>
+    <textarea id="out-state" style="width:368px;height:256px;" readonly></textarea>
     <br>
-    <button id="run">run</button>
+    <button id="assemble" style="width:96px;">assemble</button>
+    <button id="run" style="width:96px;">run</button>
 
     <script src="../assembler/assembler.js"></script>
     <script src="../emulator/address-modes.js"></script>
