@@ -70,7 +70,8 @@
 				const addressAddress = memory[programCounter] |
                     (memory[programCounter + 1] << 8)
 
-				return memory[addressAddress]
+                return memory[addressAddress] |
+                    (memory[addressAddress + 1] << 8)
 			},
 			bytes: 2
 		},
