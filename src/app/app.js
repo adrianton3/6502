@@ -2,8 +2,9 @@
     'use strict'
 
     const elements = {
-        'in': document.getElementById('in'),
-        'out': document.getElementById('out'),
+        in: document.getElementById('in'),
+        outRom: document.getElementById('out-rom'),
+        outState: document.getElementById('out-state'),
     }
 
     function stringifyNumber (value, base, length) {
@@ -30,20 +31,46 @@
         ].join('\n')
     }
 
-    function run (source) {
-        const rom = c64.assembler.assemble(source)
+    function stringifyRom (rom) {
+        return rom.lines.map((line) =>
+            line.map((value) =>
+                stringifyNumber(value, 16, 2)
+            ).join(' ')
+        ).join('\n')
+    }
+
+    function assemble (source) {
+        return c64.assembler.assembleDebug(source)
+    }
+
+    function run (blob) {
         const cpu = c64.cpu.make({ programStart: 0x0600 })
-        cpu.load(rom)
+        cpu.load(blob)
         cpu.run({ stopOpcode: 0x00 })
 
         return cpu.getState()
     }
 
-    document.getElementById('run').addEventListener('click', () => {
-        elements.out.value = ''
+    document.getElementById('assemble').addEventListener('click', () => {
+        elements.outRom.value = ''
+        elements.outState.value = ''
+
         const source = elements.in.value
-        const state = run(source)
-        elements.out.value = stringifyState(state)
+        const rom = assemble(source)
+
+        elements.outRom.value = stringifyRom(rom)
+    })
+
+    document.getElementById('run').addEventListener('click', () => {
+        elements.outRom.value = ''
+        elements.outState.value = ''
+
+        const source = elements.in.value
+        const rom = assemble(source)
+        const state = run(rom.blob)
+
+        elements.outRom.value = stringifyRom(rom)
+        elements.outState.value = stringifyState(state)
     })
 
     elements.in.value = [

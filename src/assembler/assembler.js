@@ -316,9 +316,24 @@
 			}
 		})
 
-		return [].concat(...encoded)
-	}
+		return encoded
+    }
+
+    function assembleBlob (string) {
+        const result = assemble(string)
+
+        return [].concat(...result)
+    }
+
+    function assembleDebug (string) {
+        const result = assemble(string)
+
+        return {
+            lines: result,
+            blob: [].concat(...result)
+        }
+    }
 
 	window.c64 = window.c64 || {}
-	window.c64.assembler = { assemble }
+	window.c64.assembler = { assemble: assembleBlob, assembleDebug }
 })()
